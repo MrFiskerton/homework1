@@ -39,12 +39,12 @@
         </HorizontalScrollView>
 
         <HorizontalScrollView
+            android:layout_weight="90"
             android:id="@+id/result_scrollview"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:scrollbars="horizontal"
             android:fillViewport="true"
-            android:layout_weight="90"
             android:fadeScrollbars="false">
 
             <TextView
@@ -59,19 +59,19 @@
         </HorizontalScrollView>
     </LinearLayout>
 
-    <GridLayout
+    <android.support.v7.widget.GridLayout
         android:layout_width="match_parent"
-        android:layout_weight="60"
+        android:layout_weight="55"
         android:layout_gravity="center"
         android:padding="5dp"
-        android:columnCount="4"
-        android:rowCount="5"
-        android:orientation="horizontal"
-        android:background="@color/colorAccent"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        app:columnCount="4"
+        app:rowCount="5"
+        app:orientation="horizontal"
+        android:background="@color/colorAccent">
 
         <Button
-            android:layout_column="3"
+            app:layout_column="3"
             android:text="@string/button_clear"
             android:id="@+id/clear"
             style="@style/Button" />
@@ -139,5 +139,5 @@
             android:text="@string/button_mul"
             android:id="@+id/mul"
             style="@style/Button" />
-    </GridLayout>
+    </android.support.v7.widget.GridLayout>
 </LinearLayout>

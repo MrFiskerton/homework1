@@ -11,14 +11,14 @@
     <style name="Button">
         <item name="android:layout_gravity">fill</item>
         <item name="android:radius">3dp</item>
-        <item name="android:layout_columnWeight" tools:targetApi="lollipop">1</item>
-        <item name="android:layout_rowWeight"    tools:targetApi="lollipop">1</item>
+        <item name="layout_columnWeight">1</item>
+        <item name="layout_rowWeight">1</item>
         <item name="android:layout_margin">3dp</item>
         <item name="android:padding">1px</item>
         <item name="android:paddingBottom">0dp</item>
         <item name="android:shadowRadius">5</item>
         <item name="android:textSize">19sp</item>
         <item name="android:layout_marginBottom">0dp</item>
-        <!--<item name="android:textColor">@color/textPrimary</item>-->
+        <item name="android:onClick">onClick</item>
     </style>
 </resources>
