@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.HorizontalScrollView;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.Stack;
 
 public final class CalculatorActivity extends Activity {
@@ -21,7 +22,6 @@ public final class CalculatorActivity extends Activity {
 
     private boolean typingNumber = true;
     private boolean containPoint = false;
-    private boolean needRefreshResult = false;
     private String expressionString = "", resultNumberStr = "0.0";
     private int lengthCurrentNumber = 0;
     private char lastSymbol = '$';
@@ -40,33 +40,48 @@ public final class CalculatorActivity extends Activity {
 
     public void onClick(View v) {
         char c = ((Button) v).getText().charAt(0);
-        //Log.w("Check", "" + c);
+        Log.w("Check0", "" + lengthCurrentNumber);
         if (v.getId() == R.id.eqv && !expressionString.isEmpty()) {
             if (isOperation(lastSymbol)) {
                 expressionString = expressionString.substring(0, expressionString.length() - 3);
             }
-            resultNumberStr = calculateExpression(expressionString);
+            try {
+                resultNumberStr = calculateExpression(expressionString);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             expressionString = "";
             lastSymbol = '$';
             lengthCurrentNumber = 0;
+            containPoint = false;
         }
         if (v.getId() == R.id.clear && !expressionString.isEmpty()) {
             int k = 1;
             lastSymbol = expressionString.charAt(expressionString.length() - 1);
             if (lastSymbol == ' ') {
                 k = 3;
+                typingNumber = true;
+            }
+            if (typingNumber && lengthCurrentNumber == 1) {
+                typingNumber = false;
             }
             expressionString = expressionString.substring(0, expressionString.length() - k);
             lengthCurrentNumber--;
             if (lastSymbol == '.') {
                 containPoint = false;
+                typingNumber = true;
+                lastSymbol = '0';
             }
+            Log.w("Check2", "" + lengthCurrentNumber);
         }
-        if (expressionString.isEmpty() && !resultNumberStr.isEmpty() && isOperation(c)) {
+        if (expressionString.isEmpty() && !resultNumberStr.isEmpty() && isOperation(c) &&
+                !resultNumberStr.equals("NaN") && !resultNumberStr.equals("Infinity")) {
             expressionString += resultNumberStr;
         }
         if (typingNumber && isOperation(c)) {
-            if (lastSymbol == '.') { return; }
+            if (lastSymbol == '.') {
+                return;
+            }
             if (isOperation(lastSymbol)) {
                 expressionString = expressionString.substring(0, expressionString.length() - 3);
             }
@@ -96,7 +111,7 @@ public final class CalculatorActivity extends Activity {
                 containPoint = true;
             }
         }
-        if (lastSymbol == '0' && lengthCurrentNumber == 1) {
+        if (lastSymbol == '0' && (lengthCurrentNumber == 1 || lengthCurrentNumber < 0)) {
             return;
         }
         if (Character.isDigit(c)) {
@@ -107,6 +122,7 @@ public final class CalculatorActivity extends Activity {
                 typingNumber = true;
             }
         }
+        Log.w("Check1", "" + lengthCurrentNumber);
         updateState();
     }
 
@@ -135,13 +151,13 @@ public final class CalculatorActivity extends Activity {
         return ((a == '+' || a == '−') && (b == '+' || b == '−'));
     }
 
-    private static double calculation(char operationID, double left, double right) {
+    private static double calculation(char operationID, double right, double left) {
         switch (operationID) {
-            case '+': return (left + right);
-            case '−': return (left - right);
-            case '×': return (left * right);
-            case '÷': return (left / right);
-            default:  return 0.0;
+            case '+':return (left + right);
+            case '−':return (left - right);
+            case '×':return (left * right);
+            case '÷':return (left / right);
+            default: return 0.0;
         }
     }
 
