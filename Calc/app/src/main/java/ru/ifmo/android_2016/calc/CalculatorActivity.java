@@ -2,23 +2,16 @@ package ru.ifmo.android_2016.calc;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.HorizontalScrollView;
-
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Stack;
 
 public final class CalculatorActivity extends Activity {
 
     private HorizontalScrollView expressionScrollview, resultScrollview;
     private TextView expression, result;
-
-    private DecimalFormat df = new DecimalFormat();//TODO:
 
     private boolean typingNumber = true;
     private boolean containPoint = false;
@@ -38,9 +31,31 @@ public final class CalculatorActivity extends Activity {
         resultScrollview = (HorizontalScrollView) findViewById(R.id.result_scrollview);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString("expressionString", expressionString);
+        savedInstanceState.putString("resultNumberStr", resultNumberStr);
+        savedInstanceState.putBoolean("typingNumber", typingNumber);
+        savedInstanceState.putBoolean("containPoint", containPoint);
+        savedInstanceState.putInt("lengthCurrentNumber", lengthCurrentNumber);
+        savedInstanceState.putChar("lastSymbol", lastSymbol);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        expressionString = savedInstanceState.getString("expressionString");
+        resultNumberStr = savedInstanceState.getString("resultNumberStr");
+        typingNumber = savedInstanceState.getBoolean("typingNumber");
+        containPoint = savedInstanceState.getBoolean("containPoint");
+        lengthCurrentNumber = savedInstanceState.getInt("lengthCurrentNumber");
+        lastSymbol = savedInstanceState.getChar("lastSymbol");
+        updateState();
+    }
+
     public void onClick(View v) {
         char c = ((Button) v).getText().charAt(0);
-        Log.w("Check0", "" + lengthCurrentNumber);
         if (v.getId() == R.id.eqv && !expressionString.isEmpty()) {
             if (isOperation(lastSymbol)) {
                 expressionString = expressionString.substring(0, expressionString.length() - 3);
@@ -54,6 +69,7 @@ public final class CalculatorActivity extends Activity {
             lastSymbol = '$';
             lengthCurrentNumber = 0;
             containPoint = false;
+            typingNumber = false;
         }
         if (v.getId() == R.id.clear && !expressionString.isEmpty()) {
             int k = 1;
@@ -72,11 +88,13 @@ public final class CalculatorActivity extends Activity {
                 typingNumber = true;
                 lastSymbol = '0';
             }
-            Log.w("Check2", "" + lengthCurrentNumber);
         }
-        if (expressionString.isEmpty() && !resultNumberStr.isEmpty() && isOperation(c) &&
-                !resultNumberStr.equals("NaN") && !resultNumberStr.equals("Infinity")) {
-            expressionString += resultNumberStr;
+        if (expressionString.isEmpty() && !resultNumberStr.isEmpty() && isOperation(c)) {
+            if (!resultNumberStr.equals("NaN") && !resultNumberStr.equals("Infinity")) {
+                expressionString += resultNumberStr;
+                typingNumber = true;
+                lastSymbol = expressionString.charAt(expressionString.length() - 1);
+            }
         }
         if (typingNumber && isOperation(c)) {
             if (lastSymbol == '.') {
@@ -122,7 +140,6 @@ public final class CalculatorActivity extends Activity {
                 typingNumber = true;
             }
         }
-        Log.w("Check1", "" + lengthCurrentNumber);
         updateState();
     }
 
